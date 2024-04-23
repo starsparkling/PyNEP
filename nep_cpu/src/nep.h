@@ -93,6 +93,12 @@ public:
     const std::vector<double>& position,
     std::vector<double>& descriptor);
 
+  void find_neigh(
+    const std::vector<int>& type,
+    const std::vector<double>& box,
+    const std::vector<double>& position,
+    std::vector<double>& descriptor);
+
   void find_latent_space(
     const std::vector<int>& type,
     const std::vector<double>& box,

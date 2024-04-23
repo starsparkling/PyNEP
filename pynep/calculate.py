@@ -35,6 +35,7 @@ class NEP(Calculator):
         "stress",
         "descriptor",
         "latent",
+        "neigh"
     ]
 
     def __init__(self, model_file="nep.txt", **kwargs) -> None:
@@ -95,12 +96,15 @@ class NEP(Calculator):
         if "descriptor" in properties:
             self.results['descriptor'] = np.array(
                 self.calc.getDescriptors()).reshape(-1, len(atoms)).transpose(1, 0)
-
         if "latent" in properties:
             self.results['latent'] = np.array(
                 self.calc.getLatent()).reshape(-1, len(atoms)).transpose(1, 0)
-
-
+        if "neigh" in properties:
+            r12, NL_radial, NL_angular, NN_radial, NL_angular = self.calc.getNeigh()
+            print()
+            for i in range(0, 96):
+                print(i)
+                print(" ".join(map(str, NL_radial[i*1000 :(i+1)*1000])))
 class JointCalculator(Calculator):
     
     implemented_properties = [

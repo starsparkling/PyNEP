@@ -12,6 +12,8 @@ namespace py = pybind11;
 struct Atom {
   int N;
   std::vector<int> type;
+  // std::vector<int> neigh;
+  // std::vector<double> rij;
   std::vector<double> box, position, potential, force, virial, descriptor, latent;
 };
 
@@ -25,6 +27,7 @@ class NepCalculator
     std::vector<double> getPotentialEnergy();
     std::vector<double> getForces();
     std::vector<double> getVirials();
+    std::tuple<std::vector<double>, std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> getNeigh();
     std::vector<double> getDescriptors();
     std::vector<double> getLatent();
   private:
@@ -63,7 +66,6 @@ void NepCalculator::setAtoms(
   _atom.box = _box;
   _atom.type = _type;
   _atom.position = _position;
-
   _atom.potential.resize(_atom.N);
   _atom.force.resize(_atom.N * 3);
   _atom.virial.resize(_atom.N * 9);
@@ -101,9 +103,23 @@ std::vector<double> NepCalculator::getVirials()
 
 std::vector<double> NepCalculator::getDescriptors()
 {
-  calculate();
+  // calculate();
   calc.find_descriptor(atom.type, atom.box, atom.position, atom.descriptor);
   return atom.descriptor;
+}
+
+// std::vector<double> NepCalculator::getNeigh()
+// {
+//   calculate();
+//   calc.find_neigh(atom.type, atom.box, atom.position, atom.descriptor);
+//   return std::make_tuple(calc.r12, calc.NL_radial, calc.NL_angular);
+// }
+
+std::tuple<std::vector<double>, std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> NepCalculator::getNeigh()
+{
+  // calculate();
+  calc.find_neigh(atom.type, atom.box, atom.position, atom.descriptor);
+  return std::make_tuple(calc.r12, calc.NL_radial, calc.NL_angular, calc.NN_radial, calc.NL_angular);
 }
 
 std::vector<double> NepCalculator::getLatent()
@@ -124,6 +140,7 @@ PYBIND11_MODULE(nep, m){
     .def("getForces", &NepCalculator::getForces)
     .def("getVirials", &NepCalculator::getVirials)
     .def("getDescriptors", &NepCalculator::getDescriptors)
+    .def("getNeigh", &NepCalculator::getNeigh)
     .def("getLatent", &NepCalculator::getLatent)
 		;
 }
